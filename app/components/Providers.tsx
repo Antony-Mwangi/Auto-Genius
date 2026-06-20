@@ -1,12 +1,12 @@
-"use client";
+// "use client";
 
-import { ReactNode } from "react";
-import { AuthProvider } from "@/app/context/AuthContext";
+// import { ReactNode } from "react";
+// //import { AuthProvider } from "@/app/context/AuthContext";
 
-interface ProvidersProps {
-  children: ReactNode;
-}
+// interface ProvidersProps {
+//   children: ReactNode;
+// }
 
-export default function Providers({ children }: ProvidersProps) {
-  return <AuthProvider>{children}</AuthProvider>;
-}
+// export default function Providers({ children }: ProvidersProps) {
+//   return <AuthProvider>{children}</AuthProvider>;
+// 

@@ -1,11 +1,5 @@
-import type { Metadata } from "next";
 import "./globals.css";
-import Providers from "@/app/components/Providers";
-
-export const metadata: Metadata = {
-  title: "AutoSpare",
-  description: "Premium automotive spare parts marketplace",
-};
+import { CartProvider } from "@/app/context/CartContext";
 
 export default function RootLayout({
   children,
@@ -15,7 +9,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>{children}</Providers>
+        <CartProvider>
+          {children}
+        </CartProvider>
       </body>
     </html>
   );

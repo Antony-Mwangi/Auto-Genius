@@ -36,10 +36,10 @@ export default function HomePage() {
 
           <div className="mt-8 flex gap-4">
             <Link
-              href="/register"
+              href="/shop"
               className="bg-orange-500 px-6 py-3 rounded-lg shadow-lg shadow-orange-500/30"
             >
-              Get Started
+            shop now
             </Link>
 
             <Link

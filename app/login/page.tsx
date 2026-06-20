@@ -3,11 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/app/context/AuthContext";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { refreshUser } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,6 +15,7 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
     setLoading(true);
     setError("");
 
@@ -26,10 +25,7 @@ export default function LoginPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
@@ -39,12 +35,10 @@ export default function LoginPage() {
         return;
       }
 
-      // 🔥 update global auth state immediately
-      await refreshUser();
-
-      // redirect to home
+      // ✅ simple redirect (NO auth context)
       router.push("/");
       router.refresh();
+
     } catch (err) {
       setError("Network error. Please try again.");
     } finally {
@@ -94,6 +88,7 @@ export default function LoginPage() {
             >
               {loading ? "Signing in..." : "Sign In"}
             </button>
+
           </form>
 
           <p className="text-sm text-gray-400 mt-5">
@@ -102,11 +97,13 @@ export default function LoginPage() {
               Register
             </Link>
           </p>
+
         </div>
       </div>
 
-      {/* RIGHT TEXT */}
+      {/* RIGHT PANEL */}
       <div className="hidden md:flex flex-col justify-center p-16 bg-gradient-to-br from-teal-500/10 to-cyan-500/10">
+
         <h1 className="text-4xl font-bold">
           Power Your Garage with{" "}
           <span className="text-teal-400">Precision Parts</span>
@@ -114,10 +111,10 @@ export default function LoginPage() {
 
         <p className="text-gray-300 mt-6">
           Access thousands of verified spare parts for Japanese and European vehicles.
-          Built for mechanics, garages, and car owners.
         </p>
 
-        <div className="mt-10 h-60 rounded-2xl border border-white/10 bg-white/5 shadow-inner"></div>
+        <div className="mt-10 h-60 rounded-2xl border border-white/10 bg-white/5 shadow-inner" />
+
       </div>
 
     </div>
