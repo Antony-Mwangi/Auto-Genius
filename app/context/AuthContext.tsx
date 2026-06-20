@@ -7,7 +7,14 @@ import {
   useState,
 } from "react";
 
-interface User {
+export interface User {
+  name: string;
+  email: string;
+  password: string;
+  role: "customer" | "admin";
+}
+
+interface RegisterUser {
   name: string;
   email: string;
   password: string;
@@ -16,7 +23,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => boolean;
-  register: (user: User) => boolean;
+  register: (user: RegisterUser) => boolean;
   logout: () => void;
 }
 
@@ -37,20 +44,25 @@ export function AuthProvider({
     }
   }, []);
 
-  const register = (newUser: User) => {
-    const users = JSON.parse(
+  const register = (newUser: RegisterUser) => {
+    const users: User[] = JSON.parse(
       localStorage.getItem("users") || "[]"
     );
 
     const exists = users.find(
-      (u: User) => u.email === newUser.email
+      (u) => u.email.toLowerCase() === newUser.email.toLowerCase()
     );
 
     if (exists) {
       return false;
     }
 
-    users.push(newUser);
+    const userToSave: User = {
+      ...newUser,
+      role: "customer",
+    };
+
+    users.push(userToSave);
 
     localStorage.setItem(
       "users",
@@ -64,13 +76,13 @@ export function AuthProvider({
     email: string,
     password: string
   ) => {
-    const users = JSON.parse(
+    const users: User[] = JSON.parse(
       localStorage.getItem("users") || "[]"
     );
 
     const found = users.find(
-      (u: User) =>
-        u.email === email &&
+      (u) =>
+        u.email.toLowerCase() === email.toLowerCase() &&
         u.password === password
     );
 

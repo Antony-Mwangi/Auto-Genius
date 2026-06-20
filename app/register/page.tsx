@@ -7,6 +7,7 @@ import { useAuth } from "@/app/context/AuthContext";
 
 export default function RegisterPage() {
   const router = useRouter();
+
   const { register } = useAuth();
 
   const [name, setName] = useState("");
@@ -34,39 +35,47 @@ export default function RegisterPage() {
       return;
     }
 
-    setLoading(false);
-    router.push("/login");
+    // Redirect directly to customer dashboard
+    router.push("/account");
   };
 
   return (
     <div className="min-h-screen grid md:grid-cols-2 bg-[#0b0f14] text-white">
+
       {/* LEFT FORM */}
       <div className="flex items-center justify-center p-10">
         <div className="w-full max-w-md">
-          <h2 className="mb-6 text-3xl font-bold text-teal-400">
+
+          <h2 className="mb-2 text-3xl font-bold text-teal-400">
             Create Account
           </h2>
 
-          <form onSubmit={handleRegister} className="space-y-4">
+          <p className="mb-8 text-gray-400">
+            Join AutoSpare and start shopping genuine vehicle parts.
+          </p>
+
+          <form
+            onSubmit={handleRegister}
+            className="space-y-5"
+          >
             <input
               type="text"
               placeholder="Full Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              required
               className="
                 w-full
-                rounded-lg
+                rounded-xl
                 border
                 border-white/10
                 bg-white/5
                 px-4
                 py-3
-                shadow-inner
-                shadow-black/40
                 outline-none
+                transition
                 focus:border-orange-500
               "
-              required
             />
 
             <input
@@ -74,20 +83,19 @@ export default function RegisterPage() {
               placeholder="Email Address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
               className="
                 w-full
-                rounded-lg
+                rounded-xl
                 border
                 border-white/10
                 bg-white/5
                 px-4
                 py-3
-                shadow-inner
-                shadow-black/40
                 outline-none
+                transition
                 focus:border-teal-400
               "
-              required
             />
 
             <input
@@ -95,24 +103,23 @@ export default function RegisterPage() {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
               className="
                 w-full
-                rounded-lg
+                rounded-xl
                 border
                 border-white/10
                 bg-white/5
                 px-4
                 py-3
-                shadow-inner
-                shadow-black/40
                 outline-none
+                transition
                 focus:border-cyan-400
               "
-              required
             />
 
             {error && (
-              <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">
+              <div className="rounded-lg bg-red-500/10 border border-red-500/30 p-3 text-sm text-red-400">
                 {error}
               </div>
             )}
@@ -122,17 +129,12 @@ export default function RegisterPage() {
               disabled={loading}
               className="
                 w-full
-                rounded-lg
+                rounded-xl
                 bg-teal-500
                 py-3
                 font-semibold
-                text-white
-                shadow-lg
-                shadow-teal-500/40
                 transition
-                hover:scale-[1.02]
                 hover:bg-teal-400
-                disabled:cursor-not-allowed
                 disabled:opacity-50
               "
             >
@@ -140,11 +142,11 @@ export default function RegisterPage() {
             </button>
           </form>
 
-          <p className="mt-5 text-sm text-gray-400">
+          <p className="mt-6 text-sm text-gray-400">
             Already have an account?{" "}
             <Link
               href="/login"
-              className="font-medium text-orange-400 hover:text-orange-300"
+              className="font-semibold text-orange-400 hover:text-orange-300"
             >
               Sign In
             </Link>
@@ -152,39 +154,75 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      {/* RIGHT SIDE */}
-      <div className="hidden flex-col justify-center bg-gradient-to-br from-orange-500/10 to-cyan-500/10 p-16 md:flex">
-        <h1 className="text-4xl font-bold leading-tight">
-          Join the{" "}
+      {/* RIGHT PANEL */}
+      <div className="hidden md:flex flex-col justify-center bg-gradient-to-br from-orange-500/10 to-cyan-500/10 p-16">
+
+        <h1 className="text-5xl font-bold leading-tight">
+          Welcome to{" "}
           <span className="text-orange-500">
-            AutoSpare Network
+            AutoSpare
           </span>
         </h1>
 
         <p className="mt-6 text-lg text-gray-300">
-          Create an account to save your orders, manage your cart,
-          track purchases, and enjoy a faster checkout experience.
+          Shop genuine spare parts for Toyota, Nissan, Subaru,
+          Honda, Mazda and many more.
         </p>
 
-        <div className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-6 shadow-inner">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <span className="text-xl text-orange-500">✓</span>
-              <span>Save your shopping cart</span>
+        <div className="mt-12 space-y-5 rounded-2xl border border-white/10 bg-white/5 p-8">
+
+          <div className="flex items-center gap-4">
+            <div className="text-2xl text-orange-500">
+              🚗
             </div>
 
-            <div className="flex items-center gap-3">
-              <span className="text-xl text-teal-400">✓</span>
-              <span>Track your orders easily</span>
-            </div>
+            <div>
+              <h3 className="font-semibold">
+                Genuine Parts
+              </h3>
 
-            <div className="flex items-center gap-3">
-              <span className="text-xl text-cyan-400">✓</span>
-              <span>Fast checkout on future purchases</span>
+              <p className="text-sm text-gray-400">
+                Trusted brands and verified suppliers.
+              </p>
             </div>
           </div>
+
+          <div className="flex items-center gap-4">
+            <div className="text-2xl text-teal-400">
+              🛒
+            </div>
+
+            <div>
+              <h3 className="font-semibold">
+                Save Your Cart
+              </h3>
+
+              <p className="text-sm text-gray-400">
+                Continue shopping anytime.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="text-2xl text-cyan-400">
+              📦
+            </div>
+
+            <div>
+              <h3 className="font-semibold">
+                Track Orders
+              </h3>
+
+              <p className="text-sm text-gray-400">
+                View order history and delivery status.
+              </p>
+            </div>
+          </div>
+
         </div>
+
       </div>
+
     </div>
   );
 }
