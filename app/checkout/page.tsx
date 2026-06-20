@@ -1,147 +1,314 @@
 "use client";
 
-import { useCart } from "@/app/context/CartContext";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import {
+  FaMapMarkerAlt,
+  FaPhone,
+  FaUser,
+  FaMoneyBillWave,
+  FaMobileAlt,
+  FaCheckCircle,
+} from "react-icons/fa";
+
+import { useCart } from "@/app/context/CartContext";
+import { useAuth } from "@/app/context/AuthContext";
+
 export default function CheckoutPage() {
   const router = useRouter();
-  const { cart, subtotal, clearCart } = useCart();
 
-  const [name, setName] = useState("");
+  const { cart, subtotal, totalItems, clearCart } = useCart();
+
+  const { user } = useAuth();
+
   const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
+  const [location, setLocation] = useState("");
 
-  const [paymentMethod, setPaymentMethod] = useState("mpesa");
+  const [paymentMethod, setPaymentMethod] =
+    useState("mpesa");
 
   const [loading, setLoading] = useState(false);
 
-  const handlePlaceOrder = async () => {
+  const handleCheckout = () => {
+    if (!user) {
+      alert("Please login first.");
+      router.push("/login");
+      return;
+    }
+
+    if (!phone || !location) {
+      alert("Please fill all fields.");
+      return;
+    }
+
     setLoading(true);
 
-    const orderData = {
-      customer: { name, phone, address },
-      items: cart,
-      total: subtotal,
+    const existingOrders = JSON.parse(
+      localStorage.getItem("orders") || "[]"
+    );
+
+    const newOrder = {
+      id: "ORD-" + Date.now(),
+
+      customerName: user.name,
+
+      customerEmail: user.email,
+
+      phone,
+
+      location,
+
       paymentMethod,
+
+      items: cart,
+
+      totalItems,
+
+      totalAmount: subtotal,
+
+      status: "Pending",
+
+      createdAt: new Date().toLocaleString(),
     };
 
-    console.log("ORDER:", orderData);
+    existingOrders.push(newOrder);
 
-    // 🔔 1. Simulate sending SMS/WhatsApp to owner
-    await notifyOwner(orderData);
+    localStorage.setItem(
+      "orders",
+      JSON.stringify(existingOrders)
+    );
 
-    // 🧹 2. Clear cart
     clearCart();
 
-    // 🔁 3. Redirect
-    router.push("/shop");
-  };
+    alert("Order placed successfully.");
 
-  const notifyOwner = async (order: any) => {
-    console.log("📲 Sending WhatsApp/SMS to owner...");
-    console.log("Order notification:", order);
-
-    // later: Twilio / WhatsApp API integration here
+    router.push("/account");
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0f14] text-white px-6 py-10">
+    <main className="min-h-screen bg-[#0b0f14] text-white">
 
-      <h1 className="text-4xl font-bold text-orange-500">
-        Checkout
-      </h1>
+      <div className="mx-auto max-w-7xl px-6 py-10">
 
-      <div className="mt-10 grid md:grid-cols-2 gap-10">
+        <h1 className="text-4xl font-bold text-orange-500">
 
-        {/* LEFT - FORM */}
-        <div className="space-y-4">
+          Checkout
 
-          <input
-            placeholder="Full Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg"
-          />
+        </h1>
 
-          <input
-            placeholder="Phone Number"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg"
-          />
+        <div className="mt-10 grid gap-10 lg:grid-cols-2">
 
-          <textarea
-            placeholder="Delivery Address"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg"
-          />
+          {/* LEFT */}
 
-          {/* PAYMENT OPTIONS */}
-          <div className="mt-6">
-            <h3 className="text-lg font-semibold mb-3">
-              Payment Method
-            </h3>
+          <div className="rounded-2xl bg-[#121821] p-8 border border-white/10">
 
-            <label className="block mb-2">
-              <input
-                type="radio"
-                value="mpesa"
-                checked={paymentMethod === "mpesa"}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-              />{" "}
-              M-Pesa on Delivery
-            </label>
+            <h2 className="mb-8 text-2xl font-semibold">
 
-            <label>
-              <input
-                type="radio"
-                value="cash"
-                checked={paymentMethod === "cash"}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-              />{" "}
-              Cash on Delivery
-            </label>
+              Delivery Details
+
+            </h2>
+
+            <div className="space-y-5">
+
+              <div>
+
+                <label className="mb-2 flex items-center gap-2">
+
+                  <FaUser />
+
+                  Customer
+
+                </label>
+
+                <input
+                  value={user?.name || ""}
+                  disabled
+                  className="w-full rounded-lg bg-white/5 px-4 py-3"
+                />
+
+              </div>
+
+              <div>
+
+                <label className="mb-2 flex items-center gap-2">
+
+                  <FaPhone />
+
+                  Phone Number
+
+                </label>
+
+                <input
+                  value={phone}
+                  onChange={(e) =>
+                    setPhone(e.target.value)
+                  }
+                  placeholder="0712345678"
+                  className="w-full rounded-lg bg-white/5 px-4 py-3"
+                />
+
+              </div>
+
+              <div>
+
+                <label className="mb-2 flex items-center gap-2">
+
+                  <FaMapMarkerAlt />
+
+                  Delivery Location
+
+                </label>
+
+                <textarea
+                  rows={4}
+                  value={location}
+                  onChange={(e) =>
+                    setLocation(e.target.value)
+                  }
+                  placeholder="Town, Estate, Building, Landmark..."
+                  className="w-full rounded-lg bg-white/5 px-4 py-3"
+                />
+
+              </div>
+
+              <div>
+
+                <h3 className="mb-4 text-lg font-semibold">
+
+                  Payment Method
+
+                </h3>
+
+                <label className="mb-3 flex cursor-pointer items-center gap-3 rounded-lg bg-white/5 p-4">
+
+                  <input
+                    type="radio"
+                    checked={paymentMethod === "mpesa"}
+                    onChange={() =>
+                      setPaymentMethod("mpesa")
+                    }
+                  />
+
+                  <FaMobileAlt className="text-green-400" />
+
+                  M-Pesa on Delivery
+
+                </label>
+
+                <label className="flex cursor-pointer items-center gap-3 rounded-lg bg-white/5 p-4">
+
+                  <input
+                    type="radio"
+                    checked={paymentMethod === "cash"}
+                    onChange={() =>
+                      setPaymentMethod("cash")
+                    }
+                  />
+
+                  <FaMoneyBillWave className="text-yellow-400" />
+
+                  Cash on Delivery
+
+                </label>
+
+              </div>
+
+              <button
+                onClick={handleCheckout}
+                disabled={loading}
+                className="mt-6 flex w-full items-center justify-center gap-3 rounded-lg bg-orange-500 py-4 text-lg font-bold transition hover:bg-orange-400"
+              >
+
+                <FaCheckCircle />
+
+                {loading
+                  ? "Processing..."
+                  : "Place Order"}
+
+              </button>
+
+            </div>
+
           </div>
 
-          <button
-            onClick={handlePlaceOrder}
-            disabled={loading}
-            className="w-full mt-6 py-3 bg-orange-500 rounded-lg font-bold"
-          >
-            {loading ? "Placing Order..." : "Place Order"}
-          </button>
-        </div>
+          {/* RIGHT */}
 
-        {/* RIGHT - SUMMARY */}
-        <div className="bg-white/5 border border-white/10 p-6 rounded-xl">
+          <div className="rounded-2xl bg-[#121821] p-8 border border-white/10">
 
-          <h2 className="text-2xl font-bold mb-4">
-            Order Summary
-          </h2>
+            <h2 className="mb-6 text-2xl font-semibold">
 
-          {cart.length === 0 ? (
-            <p className="text-gray-400">Your cart is empty</p>
-          ) : (
-            cart.map((item) => (
-              <div
-                key={item.id}
-                className="flex justify-between border-b border-white/10 py-2"
-              >
-                <span>{item.name} x {item.quantity}</span>
-                <span>KSh {item.price * item.quantity}</span>
+              Order Summary
+
+            </h2>
+
+            <div className="space-y-4">
+
+              {cart.map((item) => (
+
+                <div
+                  key={item.id}
+                  className="flex justify-between border-b border-white/10 pb-4"
+                >
+
+                  <div>
+
+                    <p className="font-semibold">
+
+                      {item.name}
+
+                    </p>
+
+                    <p className="text-sm text-gray-400">
+
+                      Qty: {item.quantity}
+
+                    </p>
+
+                  </div>
+
+                  <p>
+
+                    KSh {(item.price * item.quantity).toLocaleString()}
+
+                  </p>
+
+                </div>
+
+              ))}
+
+            </div>
+
+            <div className="mt-8 space-y-3">
+
+              <div className="flex justify-between">
+
+                <span>Total Items</span>
+
+                <span>{totalItems}</span>
+
               </div>
-            ))
-          )}
 
-          <div className="mt-6 text-xl font-bold text-orange-400">
-            Total: KSh {subtotal.toLocaleString()}
+              <div className="flex justify-between text-2xl font-bold text-orange-500">
+
+                <span>Total</span>
+
+                <span>
+
+                  KSh {subtotal.toLocaleString()}
+
+                </span>
+
+              </div>
+
+            </div>
+
           </div>
 
         </div>
 
       </div>
-    </div>
+
+    </main>
   );
 }

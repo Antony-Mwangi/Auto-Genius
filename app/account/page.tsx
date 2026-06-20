@@ -1,209 +1,363 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
+
+import {
+  FaShoppingBag,
+  FaShoppingCart,
+  FaBoxOpen,
+  FaTruck,
+  FaUserCircle,
+  FaSignOutAlt,
+} from "react-icons/fa";
+
 import { useAuth } from "@/app/context/AuthContext";
 import { useCart } from "@/app/context/CartContext";
 
+import { Order } from "@/app/types/order";
+
 export default function AccountPage() {
   const { user, logout } = useAuth();
+
   const { totalItems, subtotal } = useCart();
 
-  const recentOrders = [
-    {
-      id: "ORD-1001",
-      status: "Delivered",
-      total: "KSh 0",
-    },
-    {
-      id: "ORD-1002",
-      status: "Processing",
-      total: "KSh 0",
-    },
-  ];
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const allOrders: Order[] = JSON.parse(
+      localStorage.getItem("orders") || "[]"
+    );
+
+    const userOrders = allOrders.filter(
+      (order) => order.userEmail === user.email
+    );
+
+    setOrders(userOrders.reverse());
+  }, [user]);
 
   return (
     <main className="min-h-screen bg-[#0b0f14] text-white">
 
-      {/* Header */}
-
       <section className="border-b border-white/10 bg-[#111827]">
+
         <div className="mx-auto max-w-7xl px-6 py-10">
 
           <h1 className="text-4xl font-bold">
+
             Welcome,
+
             <span className="text-orange-500">
+
               {" "}
-              {user?.name || "Customer"}
+
+              {user?.name}
+
             </span>
+
           </h1>
 
-          <p className="mt-3 text-gray-400">
-            Manage your orders, profile and shopping activity.
+          <p className="mt-2 text-gray-400">
+
+            Manage your shopping activity and orders.
+
           </p>
 
         </div>
+
       </section>
 
       <section className="mx-auto max-w-7xl px-6 py-10">
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 lg:grid-cols-2">
 
-          {/* Recent Orders */}
+          {/* Continue Shopping */}
 
-          <div className="rounded-2xl border border-white/10 bg-[#121821] p-6">
+          <div className="rounded-xl bg-[#121821] p-6 border border-white/10">
 
-            <h2 className="mb-5 text-xl font-bold text-orange-400">
-              📦 Recent Orders
-            </h2>
+            <div className="flex items-center gap-3 mb-4">
 
-            <div className="space-y-4">
+              <FaShoppingBag
+                className="text-orange-500"
+                size={22}
+              />
 
-              {recentOrders.map((order) => (
-                <div
-                  key={order.id}
-                  className="rounded-xl bg-white/5 p-4"
-                >
-                  <p className="font-semibold">{order.id}</p>
+              <h2 className="text-xl font-semibold">
 
-                  <p className="text-sm text-gray-400">
-                    {order.status}
-                  </p>
+                Continue Shopping
 
-                  <p className="mt-2 text-orange-400">
-                    {order.total}
-                  </p>
-                </div>
-              ))}
+              </h2>
 
             </div>
 
-          </div>
-
-          {/* Saved Parts */}
-
-          <div className="rounded-2xl border border-white/10 bg-[#121821] p-6">
-
-            <h2 className="mb-5 text-xl font-bold text-pink-400">
-              ❤️ Saved Parts
-            </h2>
-
             <p className="text-gray-400">
-              Feature coming soon.
+
+              Browse available spare parts.
+
             </p>
 
+            <Link
+
+              href="/shop"
+
+              className="inline-block mt-6 bg-orange-500 px-5 py-3 rounded-lg font-semibold hover:bg-orange-400"
+
+            >
+
+              Shop Now
+
+            </Link>
+
           </div>
 
-          {/* Cart Summary */}
+          {/* Cart */}
 
-          <div className="rounded-2xl border border-white/10 bg-[#121821] p-6">
+          <div className="rounded-xl bg-[#121821] p-6 border border-white/10">
 
-            <h2 className="mb-5 text-xl font-bold text-teal-400">
-              🛒 Cart Summary
-            </h2>
+            <div className="flex items-center gap-3 mb-4">
 
-            <div className="space-y-3">
+              <FaShoppingCart
+                className="text-teal-400"
+                size={22}
+              />
+
+              <h2 className="text-xl font-semibold">
+
+                Cart
+
+              </h2>
+
+            </div>
+
+            <div className="space-y-2">
 
               <div className="flex justify-between">
-                <span>Total Items</span>
+
+                <span>Items</span>
 
                 <span>{totalItems}</span>
+
               </div>
 
               <div className="flex justify-between">
-                <span>Subtotal</span>
+
+                <span>Total</span>
 
                 <span>KSh {subtotal.toLocaleString()}</span>
+
               </div>
 
             </div>
 
             <Link
+
               href="/cart"
-              className="mt-6 inline-block rounded-lg bg-orange-500 px-5 py-3 font-semibold hover:bg-orange-400"
+
+              className="inline-block mt-6 bg-teal-500 px-5 py-3 rounded-lg font-semibold hover:bg-teal-400"
+
             >
+
               View Cart
+
             </Link>
+
+          </div>
+
+          {/* Orders */}
+
+          <div className="lg:col-span-2 rounded-xl bg-[#121821] p-6 border border-white/10">
+
+            <div className="flex items-center gap-3 mb-6">
+
+              <FaBoxOpen
+                className="text-orange-500"
+                size={22}
+              />
+
+              <h2 className="text-xl font-semibold">
+
+                My Orders
+
+              </h2>
+
+            </div>
+
+            {orders.length === 0 ? (
+
+              <div className="text-center py-10 text-gray-400">
+
+                No orders found.
+
+              </div>
+
+            ) : (
+
+              <div className="space-y-4">
+
+                {orders.map((order) => (
+
+                  <div
+
+                    key={order.id}
+
+                    className="rounded-lg bg-white/5 p-5"
+
+                  >
+
+                    <div className="flex justify-between">
+
+                      <div>
+
+                        <p className="font-semibold">
+
+                          {order.id}
+
+                        </p>
+
+                        <p className="text-sm text-gray-400">
+
+                          {order.createdAt}
+
+                        </p>
+
+                      </div>
+
+                      <span className="rounded-full bg-orange-500/20 px-3 py-1 text-orange-400 text-sm">
+
+                        {order.status}
+
+                      </span>
+
+                    </div>
+
+                    <div className="mt-4 text-gray-300">
+
+                      <p>
+
+                        Items: {order.totalItems}
+
+                      </p>
+
+                      <p>
+
+                        Payment: {order.paymentMethod}
+
+                      </p>
+
+                      <p>
+
+                        Delivery: {order.deliveryMethod}
+
+                      </p>
+
+                      <p>
+
+                        Total: KSh {order.totalAmount.toLocaleString()}
+
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                ))}
+
+              </div>
+
+            )}
 
           </div>
 
           {/* Delivery */}
 
-          <div className="rounded-2xl border border-white/10 bg-[#121821] p-6">
+          <div className="rounded-xl bg-[#121821] p-6 border border-white/10">
 
-            <h2 className="mb-5 text-xl font-bold text-cyan-400">
-              🚚 Delivery Status
-            </h2>
+            <div className="flex items-center gap-3 mb-4">
 
-            <div className="space-y-3">
+              <FaTruck
+                className="text-cyan-400"
+                size={22}
+              />
 
-              <div className="rounded-lg bg-white/5 p-4">
-                <p className="font-semibold">
-                  No active deliveries
-                </p>
+              <h2 className="text-xl font-semibold">
 
-                <p className="text-sm text-gray-400">
-                  Your upcoming deliveries will appear here.
-                </p>
-              </div>
+                Delivery
+
+              </h2>
 
             </div>
+
+            <p className="text-gray-400">
+
+              Track the status of your latest order.
+
+            </p>
 
           </div>
 
           {/* Profile */}
 
-          <div className="rounded-2xl border border-white/10 bg-[#121821] p-6">
+          <div className="rounded-xl bg-[#121821] p-6 border border-white/10">
 
-            <h2 className="mb-5 text-xl font-bold text-yellow-400">
-              👤 Profile Information
-            </h2>
+            <div className="flex items-center gap-3 mb-4">
 
-            <div className="space-y-3">
+              <FaUserCircle
+                className="text-yellow-400"
+                size={22}
+              />
 
-              <div>
+              <h2 className="text-xl font-semibold">
 
-                <p className="text-gray-400">
-                  Name
-                </p>
+                Profile
 
-                <p>{user?.name}</p>
-
-              </div>
-
-              <div>
-
-                <p className="text-gray-400">
-                  Email
-                </p>
-
-                <p>{user?.email}</p>
-
-              </div>
+              </h2>
 
             </div>
+
+            <p>{user?.name}</p>
+
+            <p className="text-gray-400">
+
+              {user?.email}
+
+            </p>
 
           </div>
 
           {/* Logout */}
 
-          <div className="rounded-2xl border border-white/10 bg-[#121821] p-6">
+          <div className="lg:col-span-2 rounded-xl border border-red-500/20 bg-red-500/5 p-6">
 
-            <h2 className="mb-5 text-xl font-bold text-red-400">
-              🚪 Logout
-            </h2>
+            <div className="flex items-center gap-3 mb-5">
 
-            <p className="mb-5 text-gray-400">
-              Securely sign out from your account.
-            </p>
+              <FaSignOutAlt
+                className="text-red-400"
+                size={22}
+              />
+
+              <h2 className="text-xl font-semibold text-red-400">
+
+                Logout
+
+              </h2>
+
+            </div>
 
             <button
+
               onClick={() => {
                 logout();
                 window.location.href = "/";
               }}
-              className="w-full rounded-lg bg-red-500 py-3 font-semibold transition hover:bg-red-600"
+
+              className="bg-red-500 px-6 py-3 rounded-lg font-semibold hover:bg-red-600"
+
             >
+
               Logout
+
             </button>
 
           </div>
