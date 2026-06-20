@@ -1,51 +1,50 @@
 import { Product } from "@/app/types/product";
 
-export const products: Product[] = [
-  {
-    id: "1",
-    name: "Toyota Brake Pads",
-    brand: "Bosch",
-    category: "Brakes",
-    vehicle: "Toyota Corolla",
-    image: "/products/brake.jpg",
-    price: 3500,
-    stock: 12,
-    description: "Premium ceramic brake pads."
-  },
+export const products: Product[] = Array.from({ length: 50 }, (_, i) => {
+  const id = (i + 1).toString();
 
-  {
-    id: "2",
-    name: "Oil Filter",
-    brand: "Toyota Genuine",
-    category: "Filters",
-    vehicle: "Toyota Prado",
-    image: "/products/filter.jpg",
-    price: 1200,
-    stock: 20,
-    description: "Original oil filter."
-  },
+  const sampleNames = [
+    "Brake Pads",
+    "Oil Filter",
+    "Air Filter",
+    "Shock Absorber",
+    "Spark Plug",
+    "Clutch Kit",
+    "Timing Belt",
+    "Alternator",
+    "Radiator",
+    "Fuel Pump",
+  ];
 
-  {
-    id: "3",
-    name: "Air Filter",
-    brand: "Denso",
-    category: "Filters",
-    vehicle: "Nissan Xtrail",
-    image: "/products/airfilter.jpg",
-    price: 1800,
-    stock: 15,
-    description: "High airflow air filter."
-  },
+  const brands = ["Bosch", "Denso", "KYB", "Toyota Genuine", "NGK"];
 
-  {
-    id: "4",
-    name: "Shock Absorber",
-    brand: "KYB",
-    category: "Suspension",
-    vehicle: "Subaru Forester",
-    image: "/products/shock.jpg",
-    price: 7800,
-    stock: 8,
-    description: "Gas shock absorber."
-  }
-];
+  const categories = [
+    "Brakes",
+    "Filters",
+    "Engine",
+    "Suspension",
+    "Electrical",
+  ];
+
+  const vehicles = [
+    "Toyota Corolla",
+    "Toyota Prado",
+    "Nissan Xtrail",
+    "Subaru Forester",
+    "Mazda CX-5",
+  ];
+
+  const name = sampleNames[i % sampleNames.length];
+
+  return {
+    id,
+    name: `${name} ${i + 1}`,
+    brand: brands[i % brands.length],
+    category: categories[i % categories.length],
+    vehicle: vehicles[i % vehicles.length],
+    image: "/products/default.jpg",
+    price: 0, // ✅ as requested
+    stock: Math.floor(Math.random() * 20) + 1,
+    description: `High quality ${name.toLowerCase()} for reliable performance.`,
+  };
+});

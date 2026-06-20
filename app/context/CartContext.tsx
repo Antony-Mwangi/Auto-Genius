@@ -9,39 +9,40 @@ export interface CartItem extends Product {
 
 interface CartContextType {
   cart: CartItem[];
-
   addToCart: (product: Product) => void;
   removeFromCart: (id: string) => void;
   increaseQuantity: (id: string) => void;
   decreaseQuantity: (id: string) => void;
   clearCart: () => void;
-
   totalItems: number;
   subtotal: number;
 }
 
 const CartContext = createContext<CartContextType | null>(null);
 
-export function CartProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
 
   const addToCart = (product: Product) => {
+    const id = product.id;
+
+    if (!id) {
+      console.error("❌ Product missing ID:", product);
+      return;
+    }
+
     setCart((prev) => {
-      const exists = prev.find((item) => item.id === product.id);
+      const exists = prev.find((item) => item.id === id);
 
       if (exists) {
         return prev.map((item) =>
-          item.id === product.id
+          item.id === id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       }
 
-      return [...prev, { ...product, quantity: 1 }];
+      return [...prev, { ...product, id, quantity: 1 }];
     });
   };
 
@@ -73,13 +74,10 @@ export function CartProvider({
 
   const clearCart = () => setCart([]);
 
-  const totalItems = cart.reduce(
-    (sum, item) => sum + item.quantity,
-    0
-  );
+  const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
 
   const subtotal = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, i) => sum + i.price * i.quantity,
     0
   );
 
