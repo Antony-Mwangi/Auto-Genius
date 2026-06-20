@@ -3,9 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { register } = useAuth();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -14,114 +16,175 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
+
     setLoading(true);
     setError("");
 
-    try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-        }),
-      });
+    const success = register({
+      name,
+      email,
+      password,
+    });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.message || "Something went wrong");
-        return;
-      }
-
-      // success → redirect to login
-      router.push("/login");
-    } catch (err) {
-      setError("Network error. Please try again.");
-    } finally {
+    if (!success) {
+      setError("An account with this email already exists.");
       setLoading(false);
+      return;
     }
+
+    setLoading(false);
+    router.push("/login");
   };
 
   return (
     <div className="min-h-screen grid md:grid-cols-2 bg-[#0b0f14] text-white">
-
       {/* LEFT FORM */}
       <div className="flex items-center justify-center p-10">
         <div className="w-full max-w-md">
-
-          <h2 className="text-3xl font-bold text-teal-400 mb-6">
+          <h2 className="mb-6 text-3xl font-bold text-teal-400">
             Create Account
           </h2>
 
           <form onSubmit={handleRegister} className="space-y-4">
-
             <input
+              type="text"
               placeholder="Full Name"
-              className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10
-              shadow-inner shadow-black/40 focus:border-orange-500 outline-none"
-              onChange={(e) => setName(e.target.value)}
               value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="
+                w-full
+                rounded-lg
+                border
+                border-white/10
+                bg-white/5
+                px-4
+                py-3
+                shadow-inner
+                shadow-black/40
+                outline-none
+                focus:border-orange-500
+              "
+              required
             />
 
             <input
-              placeholder="Email"
-              className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10
-              shadow-inner shadow-black/40 focus:border-teal-400 outline-none"
-              onChange={(e) => setEmail(e.target.value)}
+              type="email"
+              placeholder="Email Address"
               value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="
+                w-full
+                rounded-lg
+                border
+                border-white/10
+                bg-white/5
+                px-4
+                py-3
+                shadow-inner
+                shadow-black/40
+                outline-none
+                focus:border-teal-400
+              "
+              required
             />
 
             <input
               type="password"
               placeholder="Password"
-              className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10
-              shadow-inner shadow-black/40 focus:border-cyan-400 outline-none"
-              onChange={(e) => setPassword(e.target.value)}
               value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="
+                w-full
+                rounded-lg
+                border
+                border-white/10
+                bg-white/5
+                px-4
+                py-3
+                shadow-inner
+                shadow-black/40
+                outline-none
+                focus:border-cyan-400
+              "
+              required
             />
 
             {error && (
-              <p className="text-red-400 text-sm">{error}</p>
+              <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">
+                {error}
+              </div>
             )}
 
             <button
+              type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-lg bg-teal-500
-              shadow-lg shadow-teal-500/40 hover:scale-[1.02] transition
-              disabled:opacity-50"
+              className="
+                w-full
+                rounded-lg
+                bg-teal-500
+                py-3
+                font-semibold
+                text-white
+                shadow-lg
+                shadow-teal-500/40
+                transition
+                hover:scale-[1.02]
+                hover:bg-teal-400
+                disabled:cursor-not-allowed
+                disabled:opacity-50
+              "
             >
-              {loading ? "Creating account..." : "Create Account"}
+              {loading ? "Creating Account..." : "Create Account"}
             </button>
           </form>
 
-          <p className="text-sm text-gray-400 mt-5">
+          <p className="mt-5 text-sm text-gray-400">
             Already have an account?{" "}
-            <Link href="/login" className="text-orange-400">
+            <Link
+              href="/login"
+              className="font-medium text-orange-400 hover:text-orange-300"
+            >
               Sign In
             </Link>
           </p>
         </div>
       </div>
 
-      {/* RIGHT TEXT */}
-      <div className="hidden md:flex flex-col justify-center p-16 bg-gradient-to-br from-orange-500/10 to-cyan-500/10">
-        <h1 className="text-4xl font-bold">
-          Join the <span className="text-orange-500">AutoSpare Network</span>
+      {/* RIGHT SIDE */}
+      <div className="hidden flex-col justify-center bg-gradient-to-br from-orange-500/10 to-cyan-500/10 p-16 md:flex">
+        <h1 className="text-4xl font-bold leading-tight">
+          Join the{" "}
+          <span className="text-orange-500">
+            AutoSpare Network
+          </span>
         </h1>
 
-        <p className="text-gray-300 mt-6">
-          Get access to verified suppliers, fast checkout, and real-time order tracking.
+        <p className="mt-6 text-lg text-gray-300">
+          Create an account to save your orders, manage your cart,
+          track purchases, and enjoy a faster checkout experience.
         </p>
 
-        <div className="mt-10 h-60 rounded-2xl border border-white/10 bg-white/5 shadow-inner"></div>
-      </div>
+        <div className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-6 shadow-inner">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="text-xl text-orange-500">✓</span>
+              <span>Save your shopping cart</span>
+            </div>
 
+            <div className="flex items-center gap-3">
+              <span className="text-xl text-teal-400">✓</span>
+              <span>Track your orders easily</span>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <span className="text-xl text-cyan-400">✓</span>
+              <span>Fast checkout on future purchases</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
