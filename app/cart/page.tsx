@@ -1,86 +1,82 @@
 "use client";
 
-import Link from "next/link";
-
 import { useCart } from "@/app/context/CartContext";
-
-import CartItem from "@/app/components/cart/CartItem";
-import CartSummary from "@/app/components/cart/CartSummary";
+import { useRouter } from "next/navigation";
 
 export default function CartPage() {
+  const router = useRouter();
 
-  const { cart } = useCart();
-
-  if (cart.length === 0) {
-
-    return (
-
-      <main className="min-h-screen bg-[#0b0f14] flex items-center justify-center">
-
-        <div className="text-center">
-
-          <h1 className="text-4xl font-bold text-white">
-            Your Cart is Empty
-          </h1>
-
-          <p className="text-gray-400 mt-5">
-            Start shopping for premium auto parts.
-          </p>
-
-          <Link
-            href="/shop"
-            className="
-            inline-block
-            mt-8
-            px-8
-            py-3
-            rounded-xl
-            bg-orange-500
-            text-white
-          "
-          >
-            Continue Shopping
-          </Link>
-
-        </div>
-
-      </main>
-
-    );
-  }
+  const {
+    cart,
+    increaseQuantity,
+    decreaseQuantity,
+    removeFromCart,
+    subtotal,
+  } = useCart();
 
   return (
+    <main className="min-h-screen bg-[#0b0f14] text-white px-6 py-10">
 
-    <main className="min-h-screen bg-[#0b0f14] text-white">
+      <h1 className="text-3xl font-bold mb-8 text-orange-500">
+        Your Cart
+      </h1>
 
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      {cart.length === 0 ? (
+        <p className="text-gray-400">Your cart is empty.</p>
+      ) : (
+        <div className="space-y-6">
 
-        <h1 className="text-4xl font-bold mb-10">
-          Shopping Cart
-        </h1>
+          {cart.map((item) => (
+            <div
+              key={item.id}
+              className="flex items-center justify-between border border-white/10 p-4 rounded-xl"
+            >
+              <div>
+                <h2 className="font-semibold">{item.name}</h2>
+                <p className="text-gray-400 text-sm">
+                  KSh {item.price.toLocaleString()}
+                </p>
+              </div>
 
-        <div className="grid lg:grid-cols-3 gap-10">
+              <div className="flex items-center gap-3">
 
-          <div className="lg:col-span-2 space-y-6">
+                <button onClick={() => decreaseQuantity(item.id)}>
+                  -
+                </button>
 
-            {cart.map((item) => (
+                <span>{item.quantity}</span>
 
-              <CartItem
-                key={item.id}
-                item={item}
-              />
+                <button onClick={() => increaseQuantity(item.id)}>
+                  +
+                </button>
 
-            ))}
+              </div>
 
+              <button
+                onClick={() => removeFromCart(item.id)}
+                className="text-red-400"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+
+          <div className="flex justify-between items-center pt-6 border-t border-white/10">
+            <h2 className="text-xl font-bold">
+              Total: KSh {subtotal.toLocaleString()}
+            </h2>
+
+            <button
+              onClick={() => router.push("/checkout")}
+              className="bg-orange-500 px-6 py-3 rounded-lg font-semibold"
+            >
+              Checkout
+            </button>
           </div>
 
-          <CartSummary/>
-
         </div>
-
-      </div>
+      )}
 
     </main>
-
   );
 }
