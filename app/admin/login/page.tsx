@@ -10,46 +10,41 @@ export default function AdminLogin() {
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    // SIMPLE DEMO AUTH (replace later with backend)
+    if (email === "admin@shop.com" && password === "admin123") {
+      localStorage.setItem(
+        "adminUser",
+        JSON.stringify({
+          email,
+          role: "admin",
+        })
+      );
 
-    const admin = users.find(
-      (u: any) =>
-        u.email === email &&
-        u.password === password &&
-        u.role === "admin"
-    );
-
-    if (!admin) {
+      router.push("/admin");
+    } else {
       alert("Invalid admin credentials");
-      return;
     }
-
-    localStorage.setItem(
-      "currentUser",
-      JSON.stringify(admin)
-    );
-
-    router.push("/admin");
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0b0f14] text-white">
-      <div className="w-full max-w-md bg-[#121821] p-8 rounded-xl border border-white/10">
-
-        <h1 className="text-3xl font-bold text-orange-500 mb-6">
+      <div className="w-[350px] space-y-4">
+        <h1 className="text-2xl font-bold text-orange-500">
           Admin Login
         </h1>
 
         <input
+          className="w-full p-3 bg-white/5 border border-white/10 rounded"
           placeholder="Email"
-          className="w-full mb-4 p-3 rounded bg-white/5"
+          value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
-          type="password"
+          className="w-full p-3 bg-white/5 border border-white/10 rounded"
           placeholder="Password"
-          className="w-full mb-6 p-3 rounded bg-white/5"
+          type="password"
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
@@ -57,9 +52,8 @@ export default function AdminLogin() {
           onClick={handleLogin}
           className="w-full bg-orange-500 py-3 rounded font-bold"
         >
-          Login as Admin
+          Login
         </button>
-
       </div>
     </div>
   );

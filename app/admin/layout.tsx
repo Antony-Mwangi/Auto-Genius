@@ -1,5 +1,5 @@
 "use client";
-
+import AdminGuard from "./AdminGuard";
 import Sidebar from "@/app/components/admin/Sidebar";
 
 export default function AdminLayout({
@@ -12,7 +12,7 @@ export default function AdminLayout({
       <Sidebar />
 
       <main className="flex-1 p-8 overflow-auto">
-        {children}
+        <AdminGuard>{children}</AdminGuard>
       </main>
     </div>
   );
