@@ -11,7 +11,7 @@ export default function AdminLogin() {
 
   const handleLogin = () => {
     // SIMPLE DEMO AUTH (replace later with backend)
-    if (email === "admin@shop.com" && password === "admin123") {
+    if (email === "admin@gmail.com" && password === "admin123") {
       localStorage.setItem(
         "adminUser",
         JSON.stringify({
