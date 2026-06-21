@@ -42,8 +42,9 @@ export const products: Product[] = Array.from({ length: 50 }, (_, i) => {
     brand: brands[i % brands.length],
     category: categories[i % categories.length],
     vehicle: vehicles[i % vehicles.length],
-    image: "/products/default.jpg",
-    price: 0, // ✅ as requested
+    //image: "/products/default.jpg",
+    image: "/brakes.jpeg",
+    price: 1000, // ✅ as requested
     stock: Math.floor(Math.random() * 20) + 1,
     description: `High quality ${name.toLowerCase()} for reliable performance.`,
   };
