@@ -1,22 +1,31 @@
-import { CartItem } from "@/app/context/CartContext";
+export type OrderStatus =
+  | "Pending"
+  | "Processing"
+  | "Shipped"
+  | "Delivered";
 
 export interface Order {
   id: string;
-  userEmail: string;
-  customerName: string;
 
-  items: CartItem[];
+  userEmail: string;
+  userName: string;
+
+  phone: string;
+  location: string;
+
+  items: {
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+  }[];
 
   totalItems: number;
   totalAmount: number;
 
-  paymentMethod: string;
-  deliveryMethod: string;
+  paymentMethod: "mpesa" | "cash";
 
-  phone: string;
-  address: string;
-
-  status: string;
+  status: OrderStatus;
 
   createdAt: string;
 }

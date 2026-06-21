@@ -15,7 +15,24 @@ import {
 import { useAuth } from "@/app/context/AuthContext";
 import { useCart } from "@/app/context/CartContext";
 
-import { Order } from "@/app/types/order";
+type Order = {
+  id: string;
+  userEmail: string;
+  userName: string;
+  phone: string;
+  location: string;
+  items: {
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+  }[];
+  totalAmount: number;
+  totalItems: number;
+  paymentMethod: string;
+  status: "Pending" | "Processing" | "Shipped" | "Delivered";
+  createdAt: string;
+};
 
 export default function AccountPage() {
   const { user, logout } = useAuth();
@@ -26,25 +43,15 @@ export default function AccountPage() {
   useEffect(() => {
     if (!user) return;
 
-    const loadOrders = () => {
-      const allOrders: Order[] = JSON.parse(
-        localStorage.getItem("orders") || "[]"
-      );
+    const allOrders: Order[] = JSON.parse(
+      localStorage.getItem("orders") || "[]"
+    );
 
-      // ✅ FIX: use userEmail (NOT customerEmail)
-      const userOrders = allOrders.filter(
-        (order) => order.userEmail === user.email
-      );
+    const userOrders = allOrders.filter(
+      (order) => order.userEmail === user.email
+    );
 
-      setOrders([...userOrders].reverse());
-    };
-
-    loadOrders();
-
-    // 🔥 LIVE UPDATES (no refresh)
-    const interval = setInterval(loadOrders, 2000);
-
-    return () => clearInterval(interval);
+    setOrders([...userOrders].reverse());
   }, [user]);
 
   return (
@@ -59,13 +66,14 @@ export default function AccountPage() {
           </h1>
 
           <p className="mt-2 text-gray-400">
-            Manage your shopping activity and track orders in real time.
+            Manage your orders and shopping activity.
           </p>
         </div>
       </section>
 
-      {/* CONTENT */}
+      {/* BODY */}
       <section className="mx-auto max-w-7xl px-6 py-10">
+
         <div className="grid gap-6 lg:grid-cols-2">
 
           {/* SHOP */}
@@ -90,27 +98,25 @@ export default function AccountPage() {
               <h2 className="text-xl font-semibold">Cart</h2>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span>Items</span>
-                <span>{totalItems}</span>
-              </div>
+            <div className="flex justify-between">
+              <span>Items</span>
+              <span>{totalItems}</span>
+            </div>
 
-              <div className="flex justify-between">
-                <span>Total</span>
-                <span>KSh {subtotal.toLocaleString()}</span>
-              </div>
+            <div className="flex justify-between mt-2">
+              <span>Total</span>
+              <span>KSh {subtotal.toLocaleString()}</span>
             </div>
 
             <Link
               href="/cart"
-              className="inline-block mt-4 bg-teal-500 px-5 py-3 rounded-lg font-semibold"
+              className="inline-block mt-6 bg-teal-500 px-5 py-3 rounded-lg font-semibold"
             >
               View Cart
             </Link>
           </div>
 
-          {/* ORDERS (REAL DATA) */}
+          {/* ORDERS */}
           <div className="lg:col-span-2 rounded-xl bg-[#121821] p-6 border border-white/10">
             <div className="flex items-center gap-3 mb-6">
               <FaBoxOpen className="text-orange-500" size={22} />
@@ -118,9 +124,9 @@ export default function AccountPage() {
             </div>
 
             {orders.length === 0 ? (
-              <div className="text-center py-10 text-gray-400">
-                No orders found yet.
-              </div>
+              <p className="text-gray-400 text-center py-10">
+                No orders found.
+              </p>
             ) : (
               <div className="space-y-4">
                 {orders.map((order) => (
@@ -136,20 +142,54 @@ export default function AccountPage() {
                         </p>
                       </div>
 
-                      <span className="rounded-full bg-orange-500/20 px-3 py-1 text-orange-400 text-sm">
+                      {/* ✅ STATUS BADGE (UPDATED) */}
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm ${
+                          order.status === "Delivered"
+                            ? "bg-green-500/20 text-green-400"
+                            : order.status === "Shipped"
+                            ? "bg-blue-500/20 text-blue-400"
+                            : order.status === "Processing"
+                            ? "bg-yellow-500/20 text-yellow-400"
+                            : "bg-gray-500/20 text-gray-300"
+                        }`}
+                      >
                         {order.status}
                       </span>
                     </div>
 
-                    <div className="mt-3 text-gray-300 text-sm">
+                    <div className="mt-4 text-gray-300 space-y-1">
+                      <p>Phone: {order.phone}</p>
+                      <p>Location: {order.location}</p>
                       <p>Items: {order.totalItems}</p>
                       <p>Payment: {order.paymentMethod}</p>
-                      <p>Total: KSh {order.totalAmount.toLocaleString()}</p>
+                      <p className="text-orange-400 font-bold">
+                        Total: KSh {order.totalAmount.toLocaleString()}
+                      </p>
+                    </div>
+
+                    <div className="mt-3 text-sm text-gray-400">
+                      {order.items.map((item) => (
+                        <p key={item.id}>
+                          • {item.name} x {item.quantity}
+                        </p>
+                      ))}
                     </div>
                   </div>
                 ))}
               </div>
             )}
+          </div>
+
+          {/* DELIVERY */}
+          <div className="rounded-xl bg-[#121821] p-6 border border-white/10">
+            <div className="flex items-center gap-3 mb-4">
+              <FaTruck className="text-cyan-400" size={22} />
+              <h2 className="text-xl font-semibold">Delivery</h2>
+            </div>
+            <p className="text-gray-400">
+              Track your order status here.
+            </p>
           </div>
 
           {/* PROFILE */}
@@ -165,13 +205,6 @@ export default function AccountPage() {
 
           {/* LOGOUT */}
           <div className="lg:col-span-2 rounded-xl border border-red-500/20 bg-red-500/5 p-6">
-            <div className="flex items-center gap-3 mb-5">
-              <FaSignOutAlt className="text-red-400" size={22} />
-              <h2 className="text-xl font-semibold text-red-400">
-                Logout
-              </h2>
-            </div>
-
             <button
               onClick={() => {
                 logout();
