@@ -1,43 +1,73 @@
 "use client";
 
-import { products } from "@/app/data/products";
+import { useEffect, useState } from "react";
 
-export default function ProductsPage() {
+export default function AdminPage() {
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const storedOrders = JSON.parse(
+      localStorage.getItem("orders") || "[]"
+    );
+
+    setOrders(storedOrders);
+    setLoading(false);
+  }, []);
 
   return (
-    <div>
+    <main className="min-h-screen bg-[#0b0f14] text-white p-6">
 
-      <h1 className="text-4xl font-bold mb-8">
-        Products
+      <h1 className="text-3xl font-bold text-orange-500">
+        Admin Dashboard
       </h1>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <p className="text-gray-400 mt-2">
+        Manage all customer orders
+      </p>
 
-        {products.map((product) => (
+      <div className="mt-8 space-y-4">
 
-          <div
-            key={product.id}
-            className="bg-[#121821] border border-white/10 rounded-xl p-5"
-          >
+        {loading ? (
+          <p className="text-gray-400">Loading orders...</p>
+        ) : orders.length === 0 ? (
+          <p className="text-gray-400">No orders yet</p>
+        ) : (
+          orders.map((order) => (
+            <div
+              key={order.id}
+              className="p-4 rounded-xl bg-white/5 border border-white/10"
+            >
+              <div className="flex justify-between">
+                <h2 className="font-bold text-orange-400">
+                  {order.id}
+                </h2>
 
-            <h2 className="font-bold text-lg">
-              {product.name}
-            </h2>
+                <span className="text-sm text-green-400">
+                  {order.status}
+                </span>
+              </div>
 
-            <p className="text-gray-400">
-              {product.brand}
-            </p>
+              <p className="text-sm text-gray-300 mt-2">
+                Customer: {order.customerName}
+              </p>
 
-            <p className="mt-2">
-              Stock: {product.stock}
-            </p>
+              <p className="text-sm text-gray-300">
+                Phone: {order.phone}
+              </p>
 
-          </div>
+              <p className="text-sm text-gray-300">
+                Location: {order.location}
+              </p>
 
-        ))}
+              <p className="text-sm text-gray-300">
+                Total: KSh {order.totalAmount}
+              </p>
+            </div>
+          ))
+        )}
 
       </div>
-
-    </div>
+    </main>
   );
 }
