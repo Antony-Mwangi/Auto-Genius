@@ -28,7 +28,7 @@ export default function HomePage() {
             className="flex items-center gap-3"
           >
             <Image
-              src="/logo.png"
+              src="/logo.jpeg"
               alt="AUTOGENIUS Spare Parts LTD"
               width={55}
               height={55}
