@@ -1,6 +1,7 @@
 "use client";
+
 import AdminGuard from "./AdminGuard";
-import Sidebar from "@/app/components/admin/Sidebar";
+import AdminNavbar from "@/app/components/admin/Sidebar";
 
 export default function AdminLayout({
   children,
@@ -8,12 +9,16 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen bg-[#0b0f14] text-white">
-      <Sidebar />
+    <div className="min-h-screen bg-[#0b0f14] text-white">
 
-      <main className="flex-1 p-8 overflow-auto">
+      {/* TOP NAVBAR */}
+      <AdminNavbar />
+
+      {/* PAGE CONTENT */}
+      <main className="p-6">
         <AdminGuard>{children}</AdminGuard>
       </main>
+
     </div>
   );
 }

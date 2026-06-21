@@ -1,69 +1,44 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import {
   FaHome,
   FaShoppingBag,
   FaUsers,
   FaBoxOpen,
-  FaTimes,
   FaBars,
+  FaTimes,
 } from "react-icons/fa";
-import { useState } from "react";
 
-export default function Sidebar() {
-  const [open, setOpen] = useState(true);
+export default function AdminNavbar() {
+  const [open, setOpen] = useState(false);
 
   return (
-    <>
-      {/* MOBILE TOP BUTTON */}
-      <button
-        onClick={() => setOpen(true)}
-        className="fixed top-4 left-4 z-50 flex items-center justify-center rounded-md bg-[#121821] p-3 text-white shadow lg:hidden"
-      >
-        <FaBars />
-      </button>
+    <header className="sticky top-0 z-50 bg-[#121821] border-b border-white/10">
 
-      {/* OVERLAY (mobile) */}
-      {open && (
-        <div
-          onClick={() => setOpen(false)}
-          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
-        />
-      )}
+      {/* TOP BAR */}
+      <div className="flex items-center justify-between px-6 py-4">
 
-      {/* SIDEBAR */}
-      <aside
-        className={`
-          fixed top-0 left-0 z-50 h-full w-72
-          bg-[#121821] border-r border-white/10 p-6
-          transition-transform duration-300 ease-in-out
+        {/* BRAND */}
+        <h1 className="text-xl font-bold text-orange-500">
+          Admin Panel
+        </h1>
 
-          ${open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-        `}
-      >
+        {/* MOBILE MENU BUTTON */}
+        <button
+          onClick={() => setOpen(!open)}
+          className="text-white text-xl lg:hidden"
+        >
+          {open ? <FaTimes /> : <FaBars />}
+        </button>
 
-        {/* HEADER */}
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-orange-500">
-            Admin
-          </h1>
-
-          {/* CLOSE BUTTON */}
-          <button
-            onClick={() => setOpen(false)}
-            className="text-gray-300 hover:text-white lg:hidden"
-          >
-            <FaTimes />
-          </button>
-        </div>
-
-        {/* NAV */}
-        <nav className="mt-10 space-y-3">
+        {/* DESKTOP NAV */}
+        <nav className="hidden lg:flex items-center gap-6 text-sm text-gray-300">
 
           <Link
             href="/admin"
-            className="flex items-center gap-3 rounded-lg p-3 transition hover:bg-white/5"
+            className="flex items-center gap-2 hover:text-orange-400"
           >
             <FaHome />
             Dashboard
@@ -71,7 +46,7 @@ export default function Sidebar() {
 
           <Link
             href="/admin/orders"
-            className="flex items-center gap-3 rounded-lg p-3 transition hover:bg-white/5"
+            className="flex items-center gap-2 hover:text-orange-400"
           >
             <FaShoppingBag />
             Orders
@@ -79,7 +54,7 @@ export default function Sidebar() {
 
           <Link
             href="/admin/customers"
-            className="flex items-center gap-3 rounded-lg p-3 transition hover:bg-white/5"
+            className="flex items-center gap-2 hover:text-orange-400"
           >
             <FaUsers />
             Customers
@@ -87,14 +62,59 @@ export default function Sidebar() {
 
           <Link
             href="/admin/products"
-            className="flex items-center gap-3 rounded-lg p-3 transition hover:bg-white/5"
+            className="flex items-center gap-2 hover:text-orange-400"
           >
             <FaBoxOpen />
             Products
           </Link>
 
         </nav>
-      </aside>
-    </>
+
+      </div>
+
+      {/* MOBILE DROPDOWN MENU */}
+      {open && (
+        <div className="lg:hidden px-6 pb-4 space-y-3 text-gray-300">
+
+          <Link
+            href="/admin"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2 hover:text-orange-400"
+          >
+            <FaHome />
+            Dashboard
+          </Link>
+
+          <Link
+            href="/admin/orders"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2 hover:text-orange-400"
+          >
+            <FaShoppingBag />
+            Orders
+          </Link>
+
+          <Link
+            href="/admin/customers"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2 hover:text-orange-400"
+          >
+            <FaUsers />
+            Customers
+          </Link>
+
+          <Link
+            href="/admin/products"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2 hover:text-orange-400"
+          >
+            <FaBoxOpen />
+            Products
+          </Link>
+
+        </div>
+      )}
+
+    </header>
   );
 }
