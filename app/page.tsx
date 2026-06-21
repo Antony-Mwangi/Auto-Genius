@@ -72,6 +72,13 @@ export default function HomePage() {
               Register
             </Link>
 
+            <Link
+              href="/about"
+              className="transition hover:text-orange-400"
+            >
+              About-us
+            </Link>
+
           </nav>
 
         </div>
