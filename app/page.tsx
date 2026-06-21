@@ -154,7 +154,7 @@ export default function HomePage() {
           <div>
             <div className="flex items-center gap-3">
               <Image
-                src="/logo.png"
+                src="/logo.jpeg"
                 alt="AUTOGENIUS"
                 width={45}
                 height={45}
