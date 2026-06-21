@@ -2,6 +2,7 @@ import "./globals.css";
 
 import { CartProvider } from "@/app/context/CartContext";
 import { AuthProvider } from "@/app/context/AuthContext";
+import { OrdersProvider } from "@/app/context/OrdersContext";
 
 export default function RootLayout({
   children,
@@ -10,17 +11,25 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+
       <body>
 
         <AuthProvider>
+
           <CartProvider>
 
-            {children}
+            <OrdersProvider>
+
+              {children}
+
+            </OrdersProvider>
 
           </CartProvider>
+
         </AuthProvider>
 
       </body>
+
     </html>
   );
 }

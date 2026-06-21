@@ -1,85 +1,108 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useOrders } from "@/app/context/OrdersContext";
 
-export default function OrdersPage() {
+export default function AdminOrdersPage() {
 
-  const [orders, setOrders] = useState<any[]>([]);
-
-  useEffect(() => {
-    setOrders(
-      JSON.parse(localStorage.getItem("orders") || "[]")
-    );
-  }, []);
+  const {
+    orders,
+    updateStatus,
+    deleteOrder,
+  } = useOrders();
 
   return (
-    <div>
 
-      <h1 className="text-4xl font-bold mb-8">
-        Orders
+    <main className="min-h-screen bg-[#0b0f14] text-white p-10">
+
+      <h1 className="text-4xl font-bold text-orange-500">
+
+        Orders Dashboard
+
       </h1>
 
-      <div className="space-y-5">
+      <div className="mt-8 space-y-5">
 
         {orders.length === 0 && (
-          <p>No Orders Found</p>
+
+          <p>No orders yet.</p>
+
         )}
 
         {orders.map((order) => (
 
           <div
             key={order.id}
-            className="bg-[#121821] border border-white/10 rounded-xl p-6"
+            className="rounded-xl border border-white/10 bg-[#121821] p-6"
           >
 
             <div className="flex justify-between">
 
               <div>
 
-                <h2 className="text-xl font-bold">
-                  {order.customer.name}
+                <h2 className="font-bold">
+
+                  {order.customerName}
+
                 </h2>
 
-                <p>{order.customer.phone}</p>
+                <p>{order.phone}</p>
 
-                <p>{order.customer.address}</p>
+                <p>{order.location}</p>
 
               </div>
 
-              <div>
+              <div className="text-right">
 
-                <p className="text-orange-500">
-                  {order.paymentMethod}
+                <p>
+
+                  KSh {order.totalAmount}
+
                 </p>
 
                 <p>
-                  KSh {order.total.toLocaleString()}
+
+                  {order.status}
+
                 </p>
 
               </div>
 
             </div>
 
-            <div className="mt-6">
+            <div className="mt-5 flex gap-3">
 
-              {order.items.map((item: any) => (
+              <button
+                onClick={() =>
+                  updateStatus(
+                    order.id,
+                    "Processing"
+                  )
+                }
+                className="rounded bg-blue-500 px-4 py-2"
+              >
+                Processing
+              </button>
 
-                <div
-                  key={item.id}
-                  className="flex justify-between py-2 border-b border-white/10"
-                >
+              <button
+                onClick={() =>
+                  updateStatus(
+                    order.id,
+                    "Delivered"
+                  )
+                }
+                className="rounded bg-green-500 px-4 py-2"
+              >
+                Delivered
+              </button>
 
-                  <span>
-                    {item.name} x {item.quantity}
-                  </span>
-
-                  <span>
-                    KSh {item.price}
-                  </span>
-
-                </div>
-
-              ))}
+              <button
+                onClick={() =>
+                  deleteOrder(order.id)
+                }
+                className="rounded bg-red-500 px-4 py-2"
+              >
+                Delete
+              </button>
 
             </div>
 
@@ -89,6 +112,6 @@ export default function OrdersPage() {
 
       </div>
 
-    </div>
+    </main>
   );
 }
